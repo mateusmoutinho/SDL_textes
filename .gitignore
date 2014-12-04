@@ -1,0 +1,108 @@
+/*
+Arion Deno.
+ Tentando fazer um personagem se mover pelo teclado e ativado a transparencia.
+ Algums bugs é claro 
+*/
+
+#include <stdio.h>
+#include <SDL/SDL.h>
+
+// tela
+#define ALT  520
+#define LAR  340
+#define PROF 16
+
+int main(int argc, char *argv[])
+{
+
+//superficies
+  SDL_Surface *tela0  ,*fig;
+//eventos
+  SDL_Event teclado, controle;
+  Uint8 *tecla;
+  // retangulos para a posição das imagems
+  SDL_Rect figu1, camera;
+
+ //posiçãoo inicial
+
+  figu1.h = 28;
+  figu1.w = 28;
+  figu1.x= 10;
+  figu1.y = 1;
+
+//cor de tranparencia
+// aqui esta o erro
+ Uint32 cor_rosa = SDL_MapRGB(fig->format,0xFF,0,0xFF);
+ SDL_SetColorKey(fig,SDL_SRCCOLORKEY,cor_rosa);
+
+
+
+  // testando a iniciação a SDL
+  if (SDL_Init(SDL_INIT_VIDEO |SDL_INIT_AUDIO |SDL_INIT_JOYSTICK|
+               SDL_INIT_TIMER)==-1)
+  {
+    printf("Erro ao iniciar a SDL\n %s erro interno \n",SDL_GetError());
+    return 1;
+  }
+
+ //incializand o video
+  tela0 = SDL_SetVideoMode(ALT,LAR,PROF,SDL_HWSURFACE|SDL_DOUBLEBUF);
+
+  //nome da janela
+  SDL_WM_SetCaption("Meu jogo texte","mundo.ico");
+
+//carrega a imagen
+  fig = SDL_LoadBMP("bola.bmp");
+
+
+// game loop
+  while(teclado.type != SDL_QUIT) //rodar enquanto nao for para encerrar :)
+  {
+     SDL_PollEvent(&teclado);
+      //asocia a tecla
+     tecla = SDL_GetKeyState(NULL);
+   //encerra o program caso aperte esc
+    if(tecla[SDLK_ESCAPE]) break;
+    //limpa a tela
+    SDL_FillRect(tela0, NULL, 0);
+
+ // movem o personagem
+    if(tecla[SDLK_DOWN])
+     {
+        figu1.y -=1;
+     }
+
+    if(tecla[SDLK_UP])
+     {
+       figu1.y +=1;
+     }
+
+    if(tecla[SDLK_LEFT])
+     {
+      figu1.x +=1;
+     }
+
+   if(tecla[SDLK_RIGHT])
+    {
+     figu1.x -=1;
+    }
+
+    printf("posicao X: %d \n Posicao Y: %d\n",figu1.x,figu1.y);
+
+  // desenha o personagem na tela
+   SDL_BlitSurface(fig,&figu1,tela0,&camera);
+
+   //atrasa a tela
+     SDL_Delay(15);
+
+     //atualizar a tela
+   SDL_Flip(tela0);
+     }
+
+//libera a memoria das imagesm
+ SDL_FreeSurface(fig);
+ SDL_FreeSurface(tela0);
+//encerra a SDL
+  SDL_Quit();
+  return 0;
+}
